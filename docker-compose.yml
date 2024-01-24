@@ -1,0 +1,59 @@
+version: '3'
+
+services:
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    container_name: backend
+    ports:
+    - 8000:8000
+    volumes:
+      - ./api:/var/www/html
+    networks:
+      - app-network
+    depends_on:
+      - mysql
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: frontend
+    ports:
+      - 3000:3000
+    volumes:
+      - ./frontend:/usr/src/app
+    networks:
+      - app-network
+
+  apache:
+  image: httpd:latest
+  container_name: apache
+  ports:
+    - 80:80
+  volumes:
+    - ./apache/httpd.conf:/usr/local/apache2/conf/httpd.conf
+  depends_on:
+    - app
+    - mysql
+  networks:
+    - app-network
+
+  mysql:
+    image: mariadb:10.4
+    restart: always
+    environment:
+      MYSQL_DATABASE: vtu
+      MYSQL_USER: root
+      MYSQL_PASSWORD: 
+      MYSQL_ROOT_PASSWORD: 
+    volumes:
+      - ./api/storage/db_data:/var/lib/mysql
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+

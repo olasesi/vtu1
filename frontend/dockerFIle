@@ -1,0 +1,19 @@
+FROM node:20-alpine
+
+# Set working directory
+WORKDIR /usr/src/app
+
+# Copy frontend files to the container
+COPY . .
+
+# Install dependencies using npm
+RUN npm install
+
+# Build the frontend
+RUN npm run build
+
+# Expose port (adjust if necessary)
+EXPOSE 8080
+
+# Start the frontend server
+CMD ["npm", "run", "serve"]
